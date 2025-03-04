@@ -11,28 +11,34 @@ function getFiles() {
     return filePaths.map(path => readFile(path));
 }
 
+function getComments() {
+    const arrayComments = [];
+    for (let file of getFiles()) {
+        for (let line of file.split('\n')) {
+            let comment = line.match(/(\/\/\s*TODO.*)/);
+            if (comment) {
+                arrayComments.push(line.match(/(\/\/\s*TODO.*)/)[0]);
+            }
+        }
+    }
+    return arrayComments;
+}
+
 function processCommand(command) {
     switch (command) {
         case 'show':
-            for (let file of getFiles()) {
-                for (let line of file.split('\n')) {
-                    let comment = line.match(/(\/\/\s*TODO.*)/);
-                    if (comment) {
-                        console.log(line.match(/(\/\/\s*TODO.*)/)[0]);
-                    }
+            const allComments = getComments();
+            for (let comment of allComments) {
+                console.log(comment);
+            }
+            break;
+        case 'important':
+            for (let comment of getComments()) {
+                if (comment.indexOf('!') != -1){
+                    console.log(comment);
                 }
             }
-            case 'important':
-                let files = getFiles();
-                for (const file of files){
-                    const splitFile = file.split('\n');
-                    for (let str of splitFile){
-                        let comment = str.match(/(\/\/\s*TODO.*!.*)/);
-                        if (comment) {
-                            console.log(str.match(/(\/\/\s*TODO.*!.*)/)[0]);
-                        }
-                    }
-                }
+            break;
         case 'exit':
             process.exit(0);
             break;
