@@ -25,7 +25,8 @@ function getComments() {
 }
 
 function processCommand(command) {
-    switch (command) {
+    command = command.trim().split(/\s+/);
+    switch (command[0]) {
         case 'show':
             const allComments = getComments();
             for (let comment of allComments) {
