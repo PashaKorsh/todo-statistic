@@ -45,22 +45,44 @@ function compareCommentsByDate(a, b) {
     return new Date(user1[0], user1[1], user1[2]) - new Date(user2[0], user2[1], user2[2]);
 }
 
+function truncateString(str, len) {
+	if (str.length > len) {
+		return str.slice(0, len-1) + "…";
+	}
+	return str;
+}
+
+function printTable(comments) {
+    let res = '  !  |  ';
+    res += 'user'.padEnd(10, ' ') + '  |  ';
+    res += 'date'.padEnd(10, ' ') + '  |  ';
+    res += 'comment'.padEnd(50, ' ') + '  |  ';
+    console.log(res);
+    let a = '';
+    for (let i = 0; i < 100; i++)
+        a += '-';
+    console.log(a);
+    for (const comment of comments) {
+        let res = '  ' + (comment.indexOf('!') === -1 ? ' ' : '!') + '  |  ';
+        const name = comment.match(/TODO(.*?);/);
+        res += truncateString(name === null ? '' : name[1].trim(), 10).padEnd(10, ' ') + '  |  ';
+        const date = comment.match(/TODO.*;(.*);/);
+        res += truncateString(date === null ? '' : date[1].trim(), 10).padEnd(10, ' ') + '  |  ';
+        const com = comment.match(/;.*?;(.*)$/);
+        res += truncateString(date === null ? '' : com[1].trim(), 50).padEnd(50, ' ')
+        console.log(res);
+    }
+}
+
 function processCommand(command) {
     command = command.trim().split(/\s+/);
     switch (command[0]) {
         case 'show':
-            for (let comment of getComments()) {
-                console.log(comment);
-            }
+            printTable(getComments());
             break;
         case 'important':
-            for (let comment of getComments()) {
-                if (comment.indexOf('!') != -1){
-                    console.log(comment);
-                }
-            }
+            printTable(getComments().filter((c) => c.indexOf('!') !== -1));
             break;
-<<<<<<< Updated upstream
         case 'sort':
             let comments = getComments();
             if (command[1] === 'importance') {
@@ -72,29 +94,32 @@ function processCommand(command) {
             } else {
                 break;
             }
-            for (let comment of comments) {
-                console.log(comment);
-            }
+            printTable(comments);
             break;
-=======
         case 'user':
             const findingName = command[1].toLowerCase();
+            const a = [];
             for (let comment of getComments()){
                 const name = comment.match(/\/\/\s*TODO (.*?);/);
                 if (comment.split(';').length === 3 && name[1].trim().toLowerCase() === findingName){
-                    console.log(comment);
+                    a.push(comment);
                 }
             }
+            printTable(a);
             break;
-        case 'date':
-            const findingDate = command[1];
-            for (let comment of getComments()){
-                if (comment.split(';').length === 3){
-                    const commnetDate = new Date(comment.match(/\/\/\s*TODO.*; (.*);/));
-                    
+            case 'date':
+                const findingDate = new Date(command[1]);
+                const b = [];
+                for (let comment of getComments()){
+                    if (comment.split(';').length === 3){
+                        const commentDate = new Date(comment.match(/\/\/\s*TODO.*; (.*);/)[1]);
+                        if (commentDate >= findingDate){
+                            b.push(comment);
+                        }
+                    }
                 }
-            }
->>>>>>> Stashed changes
+                printTable(b);
+                break;
         case 'exit':
             process.exit(0);
             break;
