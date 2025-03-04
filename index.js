@@ -22,6 +22,17 @@ function processCommand(command) {
                     }
                 }
             }
+            case 'important':
+                let files = getFiles();
+                for (const file of files){
+                    const splitFile = file.split('\n');
+                    for (let str of splitFile){
+                        let comment = str.match(/(\/\/\s*TODO.*!.*)/);
+                        if (comment) {
+                            console.log(str.match(/(\/\/\s*TODO.*!.*)/)[0]);
+                        }
+                    }
+                }
         case 'exit':
             process.exit(0);
             break;
