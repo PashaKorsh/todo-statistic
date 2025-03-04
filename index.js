@@ -24,12 +24,32 @@ function getComments() {
     return arrayComments;
 }
 
+function compareCommentsByUser(a, b) {
+    let user1 = a.match(/TODO(.*?);/);
+    let user2 = b.match(/TODO(.*?);/);
+    if (user1 == null)
+        return 1;
+    if (user2 == null)
+        return -1;
+    return user1[1].trim().localeCompare(user2[1].trim());
+}
+function compareCommentsByDate(a, b) {
+    let user1 = a.match(/TODO.*;(.*);/);
+    let user2 = b.match(/TODO.*;(.*);/);
+    if (user1 == null)
+        return 1;
+    if (user2 == null)
+        return -1;
+    user1 = user1[1].split('-');
+    user2 = user2[1].split('-');
+    return new Date(user1[0], user1[1], user1[2]) - new Date(user2[0], user2[1], user2[2]);
+}
+
 function processCommand(command) {
     command = command.trim().split(/\s+/);
     switch (command[0]) {
         case 'show':
-            const allComments = getComments();
-            for (let comment of allComments) {
+            for (let comment of getComments()) {
                 console.log(comment);
             }
             break;
@@ -38,6 +58,21 @@ function processCommand(command) {
                 if (comment.indexOf('!') != -1){
                     console.log(comment);
                 }
+            }
+            break;
+        case 'sort':
+            let comments = getComments();
+            if (command[1] === 'importance') {
+                comments.sort((a, b) => b.split('!').length - a.split('!').length);
+            } else if (command[1] === 'user') {
+                comments.sort((a, b) => compareCommentsByUser(a,b));
+            } else if (command[1] === 'date') {
+                comments.sort((a, b) => compareCommentsByDate(a,b));
+            } else {
+                break;
+            }
+            for (let comment of comments) {
+                console.log(comment);
             }
             break;
         case 'exit':
