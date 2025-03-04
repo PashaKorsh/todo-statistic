@@ -60,6 +60,7 @@ function processCommand(command) {
                 }
             }
             break;
+<<<<<<< Updated upstream
         case 'sort':
             let comments = getComments();
             if (command[1] === 'importance') {
@@ -75,6 +76,25 @@ function processCommand(command) {
                 console.log(comment);
             }
             break;
+=======
+        case 'user':
+            const findingName = command[1].toLowerCase();
+            for (let comment of getComments()){
+                const name = comment.match(/\/\/\s*TODO (.*?);/);
+                if (comment.split(';').length === 3 && name[1].trim().toLowerCase() === findingName){
+                    console.log(comment);
+                }
+            }
+            break;
+        case 'date':
+            const findingDate = command[1];
+            for (let comment of getComments()){
+                if (comment.split(';').length === 3){
+                    const commnetDate = new Date(comment.match(/\/\/\s*TODO.*; (.*);/));
+                    
+                }
+            }
+>>>>>>> Stashed changes
         case 'exit':
             process.exit(0);
             break;
